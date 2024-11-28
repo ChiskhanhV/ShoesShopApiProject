@@ -3,6 +3,7 @@ package com.example.api.controller;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,11 +23,18 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.api.entity.Cart;
 import com.example.api.entity.Order;
 import com.example.api.entity.Order_Item;
+import com.example.api.entity.Product;
 import com.example.api.entity.Product_Size;
+import com.example.api.entity.Shipper;
+import com.example.api.entity.Shipping_Type;
 import com.example.api.entity.User;
+import com.example.api.entity.Voucher;
 import com.example.api.model.OrderDto;
 import com.example.api.service.CartService;
 import com.example.api.service.OrderService;
+import com.example.api.service.ShipperService;
+import com.example.api.service.VoucherService;
+import com.example.api.service.Shipping_TypeService;
 import com.example.api.service.Order_ItemService;
 import com.example.api.service.ProductService;
 import com.example.api.service.UserService;
@@ -42,6 +51,15 @@ public class OrderController {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	VoucherService voucherService;
+	
+	@Autowired
+	ShipperService shipperService;
+	
+	@Autowired
+	Shipping_TypeService shipping_typeService;
 
 	@Autowired
 	Order_ItemService order_ItemService;
@@ -79,7 +97,8 @@ public class OrderController {
 	@PostMapping(path = "/placeorder")
 	public ResponseEntity<Order> placeOrder(@RequestParam String user_id, @RequestParam String fullname,
 			@RequestParam String phoneNumber, @RequestParam String address, @RequestParam String paymentMethod,
-			@RequestParam int total) {
+			@RequestParam int total, @RequestParam int voucherId, @RequestParam int shipping_type_id, @RequestParam String shipper_id,
+			@RequestParam Boolean is_pay) throws Exception {
 		List<Cart> listCart = cartService.GetAllCartByUser_id(user_id);
 		Order newOrder = new Order();
 		User user = userService.findByIdAndRole(user_id, "user");
@@ -90,6 +109,9 @@ public class OrderController {
 //		for (Cart y : listCart) {
 //			total += y.getProduct().getPrice() * y.getCount();
 //		}
+		Voucher voucher = voucherService.getVoucherById(voucherId);
+		Shipper shipper = shipperService.getShipperByID(shipper_id);
+		Shipping_Type shipping_type = shipping_typeService.getShipping_TypeById(shipping_type_id);
 		newOrder.setUser(user);
 		newOrder.setFullname(fullname);
 		newOrder.setBooking_Date(booking_date);
@@ -101,6 +123,10 @@ public class OrderController {
 		newOrder.setPhone(phoneNumber);
 		newOrder.setStatus("Pending");
 		newOrder.setTotal(total);
+		newOrder.setVoucher(voucher);
+		newOrder.setShipper(shipper);
+		newOrder.setShipping_type(shipping_type);
+		newOrder.setIsPay(is_pay);
 
 		newOrder = orderService.saveOrder(newOrder);
 
@@ -174,4 +200,16 @@ public class OrderController {
 		return new ResponseEntity<Page<Order>>(orders, HttpStatus.OK);
 	}
 	
+	@PostMapping("/assign-shipper")
+	public ResponseEntity<String> assignShipperToOrders(
+	        @RequestParam String shipperId,
+	        @RequestBody List<Integer> orderIds) {
+	    try {
+	        orderService.assignShipper(shipperId, orderIds);
+	        return ResponseEntity.ok("Shipper assigned successfully!");
+	    } catch (Exception e) {
+	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+	    }
+	}
+
 }

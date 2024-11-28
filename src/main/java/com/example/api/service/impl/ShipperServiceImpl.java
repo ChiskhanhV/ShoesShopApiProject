@@ -1,6 +1,7 @@
 package com.example.api.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,9 +34,9 @@ public class ShipperServiceImpl implements ShipperService{
 
 
 	@Override
-	public Shipper getShipperByID(String id) {
+	public Shipper getShipperByID(String id) throws Exception {
 		// TODO Auto-generated method stub
-		return ShipperRepository.getById(id);
+		return ShipperRepository.findById(id).orElseThrow(() -> new Exception("Shipper not found with ID: " + id));
 	}
 
 }

@@ -30,7 +30,7 @@ public class Favorite_Product {
     private int favoriteId;
 
     @Column(name = "added_at", nullable = false)
-    private LocalDateTime addedAt;
+    private Date addedAt;
     
     @ManyToOne
 	@JoinColumn(name = "user_id")

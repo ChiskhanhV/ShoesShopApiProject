@@ -39,13 +39,7 @@ public class Shipper {
     @Column(name = "address", columnDefinition = "MEDIUMTEXT")
     private String address; // Địa chỉ của shipper
 
-    @ManyToOne
-	@JoinColumn(name = "company_id")
-	@EqualsAndHashCode.Exclude
-	@ToString.Exclude
-	@JsonIgnore
-	private Shipping_Company company; // Tham chiếu đến bảng `shipping_company`
     
     @OneToMany(mappedBy = "shipper", cascade = CascadeType.ALL)
-	private List<Shipping> shipping;
+	private List<Order> order;
 }

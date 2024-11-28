@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.api.entity.Brand;
+import com.example.api.error.ErrorCode;
+import com.example.api.error.ErrorResponse;
 import com.example.api.service.BrandService;
 import com.example.api.service.CloudinaryService;
 
@@ -32,14 +34,26 @@ public class BrandController {
 	CloudinaryService cloudinaryService;
 
 	@GetMapping
-	public ResponseEntity<List<Brand>> GetBrand() {
-		List<Brand> listBrands = BrandService.getAllBrand();
-		if (listBrands != null) {
-			return new ResponseEntity<>(listBrands, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(listBrands, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
+	public ResponseEntity<?> GetBrand() {
+	    try {
+	        List<Brand> listBrands = BrandService.getAllBrand();
+	        
+	        if (listBrands.isEmpty()) {
+	            return new ResponseEntity<>(
+	                new ErrorResponse(ErrorCode.BRAND_NOT_FOUND.getCode(), ErrorCode.BRAND_NOT_FOUND.getMessage()),
+	                HttpStatus.NOT_FOUND
+	            );
+	        }
+
+	        return new ResponseEntity<>(listBrands, HttpStatus.OK);
+	    } catch (Exception e) {
+	        return new ResponseEntity<>(
+	            new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR.getCode(), ErrorCode.INTERNAL_SERVER_ERROR.getMessage()),
+	            HttpStatus.INTERNAL_SERVER_ERROR
+	        );
+	    }
 	}
+
 	
 //	@GetMapping("/pagination/{page}/{pageSize}")
 //	public ResponseEntity<Page<Brand>> findProductsWithPagination(@PathVariable int page,@PathVariable int pageSize){
@@ -48,7 +62,7 @@ public class BrandController {
 //	}
 
 	@PostMapping(path = "/add", consumes = "multipart/form-data")
-	public ResponseEntity<Brand> newBrand(@RequestParam String BrandName,
+	public ResponseEntity<?> newBrand(@RequestParam String BrandName,
 			@RequestParam MultipartFile BrandImage, @RequestParam Boolean status) {
 		Brand newBrand = new Brand();
 		newBrand.setBrand_name(BrandName);
@@ -64,7 +78,7 @@ public class BrandController {
 			return new ResponseEntity<>(newBrand, HttpStatus.OK);
 		} else {
 			System.out.println("New Brand add failed.");
-			return new ResponseEntity<>(newBrand, HttpStatus.INTERNAL_SERVER_ERROR);
+			return new ResponseEntity<>(new ErrorResponse(ErrorCode.BRAND_CREATION_FAILED.getCode(), ErrorCode.BRAND_CREATION_FAILED.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 

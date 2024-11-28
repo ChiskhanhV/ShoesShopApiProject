@@ -1,8 +1,10 @@
 package com.example.api.controller;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -18,9 +20,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.example.api.entity.Product;
 import com.example.api.entity.Rating;
+import com.example.api.entity.Product;
 import com.example.api.entity.User;
+import com.example.api.model.RatingDto;
 import com.example.api.service.RatingService;
 import com.example.api.service.ProductService;
 import com.example.api.service.UserService;
@@ -38,6 +41,9 @@ public class RatingController {
 
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	ModelMapper modelMapper;
 
 	@Autowired
 	CloudinaryService cloudinaryService;
@@ -161,4 +167,16 @@ public class RatingController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error deleting Rating with ID " + id);
         }
     }
+	
+	@GetMapping(path = "/ratingofproduct")
+	public ResponseEntity<List<RatingDto>> RatingOfUser(int product_id) {
+		List<Rating> listRating = RatingService.getRatingByProductId(product_id);
+		List<RatingDto> lisRatingDto = new ArrayList<>();
+		for (Rating y : listRating) {
+			RatingDto RatingDto = modelMapper.map(y, RatingDto.class);
+			System.out.println(RatingDto);
+			lisRatingDto.add(RatingDto);
+		}
+		return new ResponseEntity<>(lisRatingDto, HttpStatus.OK);
+	}
 }

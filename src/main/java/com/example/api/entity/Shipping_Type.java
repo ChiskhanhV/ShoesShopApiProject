@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "shipping_company")
-public class Shipping_Company {
+@Table(name = "shipping_type")
+public class Shipping_Type {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -33,6 +33,6 @@ public class Shipping_Company {
     @Column(name = "estimated_time", nullable = false, columnDefinition = "NVARCHAR(255)")
     private String estimatedTime;
     
-    @OneToMany(mappedBy = "company", cascade = CascadeType.ALL)
-	private List<Shipper> shipper;
+    @OneToMany(mappedBy = "shipping_type", cascade = CascadeType.ALL)
+	private List<Order> Order;
 }

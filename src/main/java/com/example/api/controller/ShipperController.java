@@ -2,6 +2,7 @@ package com.example.api.controller;
 
 import java.util.Base64;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,9 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.example.api.entity.Shipper;
-import com.example.api.entity.Shipping_Company;
+import com.example.api.repository.ShipperRepository;
 import com.example.api.service.ShipperService;
-import com.example.api.service.Shipping_CompanyService;
 import com.example.api.service.CloudinaryService;
 
 @CrossOrigin("*")
@@ -30,8 +30,8 @@ public class ShipperController {
 	ShipperService ShipperService;
 	
 	@Autowired
-	Shipping_CompanyService Shipping_CompanyService;
-
+	ShipperRepository ShipperRepository;
+	
 	@Autowired
 	CloudinaryService cloudinaryService;
 
@@ -47,7 +47,7 @@ public class ShipperController {
 
 	@PostMapping(path = "/login")
 	public ResponseEntity<Shipper> newShipper(@RequestParam String phone_number,
-			@RequestParam String password) {
+			@RequestParam String password) throws Exception {
 		Shipper shipper = ShipperService.getShipperByID(phone_number);
 		if (shipper != null && shipper.getPassword() != null) {
 			String decodedValue = new String(Base64.getDecoder().decode(shipper.getPassword()));
@@ -62,24 +62,50 @@ public class ShipperController {
 			return new ResponseEntity<>(shipper, HttpStatus.OK);
 	}
 	
+//	@PostMapping(path = "/signup")
+//	public ResponseEntity<Shipper> SignUp(@RequestParam String phone_number, @RequestParam String fullname,
+//			@RequestParam String password) throws Exception {
+//		Shipper shipper = ShipperService.getShipperByID(phone_number);
+//		if (shipper != null) {
+//			return new ResponseEntity<>(HttpStatus.CONFLICT);
+//		} else {
+//			String encodedValue = Base64.getEncoder().encodeToString(password.getBytes());
+//			String avatar = "https://res.cloudinary.com/dedqzbz5c/image/upload/v1721817032/shipper_bzk8hn.png";
+//			Shipper newshipper = ShipperService.saveShipper(new Shipper(phone_number, fullname, encodedValue, avatar, null, null));
+//			System.out.println(newshipper);
+//			return new ResponseEntity<>(newshipper, HttpStatus.OK);
+//		}
+//	}
+	
 	@PostMapping(path = "/signup")
 	public ResponseEntity<Shipper> SignUp(@RequestParam String phone_number, @RequestParam String fullname,
-			@RequestParam String password, @RequestParam Integer companyId) {
-		Shipper shipper = ShipperService.getShipperByID(phone_number);
-		if (shipper != null) {
-			return new ResponseEntity<>(HttpStatus.CONFLICT);
-		} else {
-			Shipping_Company company = Shipping_CompanyService.getShipping_CompanyById(companyId);
-			String encodedValue = Base64.getEncoder().encodeToString(password.getBytes());
-			String avatar = "https://res.cloudinary.com/dedqzbz5c/image/upload/v1721817032/shipper_bzk8hn.png";
-			Shipper newshipper = ShipperService.saveShipper(new Shipper(phone_number, fullname, encodedValue, avatar, null, company, null));
-			System.out.println(newshipper);
-			return new ResponseEntity<>(newshipper, HttpStatus.OK);
+	                                      @RequestParam String password) {
+	    // Kiểm tra xem shipper đã tồn tại
+	    Optional<Shipper> existingShipper = java.util.Optional.empty();
+		try {
+			existingShipper = ShipperRepository.findById(phone_number);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+	    if (existingShipper.isPresent()) {
+	        return new ResponseEntity<>(HttpStatus.CONFLICT);
+	    }
+
+	    // Mã hóa mật khẩu
+	    String encodedValue = Base64.getEncoder().encodeToString(password.getBytes());
+	    String avatar = "https://res.cloudinary.com/dedqzbz5c/image/upload/v1721817032/shipper_bzk8hn.png";
+
+	    // Tạo shipper mới
+	    Shipper newShipper = new Shipper(phone_number, fullname, encodedValue, avatar, null, null);
+	    Shipper savedShipper = ShipperService.saveShipper(newShipper);
+
+	    return new ResponseEntity<>(savedShipper, HttpStatus.OK);
 	}
 
+
 	@PostMapping(path = "changepassword")
-	public ResponseEntity<String> ChangePassword(String phone_number, String password) {
+	public ResponseEntity<String> ChangePassword(String phone_number, String password) throws Exception {
 		Shipper Shipper = ShipperService.getShipperByID(phone_number);
 		if (Shipper != null) {
 			String encodedValue = Base64.getEncoder().encodeToString(password.getBytes());
@@ -92,7 +118,7 @@ public class ShipperController {
 
 	@PostMapping(path = "update", consumes = "multipart/form-data")
 	public ResponseEntity<Shipper> UpdateAvatar(String phone_number, MultipartFile avatar, String fullname,
-			String address) {
+			String address) throws Exception {
 		Shipper Shipper = ShipperService.getShipperByID(phone_number);
 		if (Shipper != null) {
 			if (avatar != null) {

@@ -59,4 +59,10 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 
 	@Query(value = "SELECT * FROM shoesshop.order o WHERE MONTH(o.booking_date) = :month AND YEAR(o.booking_date) = :year AND o.status = 'Completed';", nativeQuery = true)
 	List<Order> getByMonthAndYear(@Param("month") int month, @Param("year") int year);
+	
+	// Tìm các đơn hàng theo danh sách ID
+	@Query("SELECT o FROM Order o WHERE o.id IN :ids")
+	List<Order> findAllById(@Param("ids") List<Integer> ids);
+
+
 }

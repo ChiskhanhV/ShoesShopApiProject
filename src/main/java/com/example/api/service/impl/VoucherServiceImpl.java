@@ -22,11 +22,10 @@ public class VoucherServiceImpl implements VoucherService{
 		return voucherRepository.save(Voucher);
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public Voucher getVoucherById(int id) {
 		// TODO Auto-generated method stub
-		return voucherRepository.getById(id);
+		return voucherRepository.findById(id);
 	}
 
 	@Override

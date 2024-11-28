@@ -1,6 +1,7 @@
 package com.example.api.service.impl;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -9,13 +10,18 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.example.api.entity.Order;
+import com.example.api.entity.Shipper;
 import com.example.api.repository.OrderRepository;
+import com.example.api.repository.ShipperRepository;
 import com.example.api.service.OrderService;
 
 @Service
 public class OrderServiceImpl implements OrderService{
 	@Autowired
 	OrderRepository orderRepository;
+	
+	@Autowired
+	ShipperRepository shipperRepository;
 
 	@Override
 	public Order saveOrder(Order order) {
@@ -102,5 +108,24 @@ public class OrderServiceImpl implements OrderService{
 		// TODO Auto-generated method stub
 		return orderRepository.findDailyRevenueByMonth(year, month);
 	}
+
+	@Override
+	public void assignShipper(String shipperId, List<Integer> orderIds) throws Exception {
+	    // Tìm shipper theo ID, ném ngoại lệ nếu không tồn tại
+	    Shipper shipper = shipperRepository.findById(shipperId)
+	            .orElseThrow(() -> new Exception("Shipper not found with ID: " + shipperId));
+
+	    // Tìm các đơn hàng theo danh sách ID
+	    List<Order> orders = orderRepository.findAllById(orderIds);
+
+	    // Cập nhật shipper cho các đơn hàng
+	    for (Order order : orders) {
+	        order.setShipper(shipper);
+	    }
+
+	    // Lưu danh sách đơn hàng đã cập nhật
+	    orderRepository.saveAll(orders);
+	}
+
 	
 }

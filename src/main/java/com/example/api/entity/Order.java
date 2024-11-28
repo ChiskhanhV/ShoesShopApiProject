@@ -2,6 +2,7 @@ package com.example.api.entity;
 
 import java.sql.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -67,9 +68,6 @@ public class Order {
 	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
 	private List<Order_Item> order_Item;
 	
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
-	private List<Shipping> shipping;
-	
 	@ManyToOne
 	@JoinColumn(name = "user_id")
 	@EqualsAndHashCode.Exclude
@@ -83,5 +81,21 @@ public class Order {
 	@ToString.Exclude
 	@JsonIgnore
 	private Voucher voucher;
+	
+	@ManyToOne
+	@JoinColumn(name = "shipping_type_id")
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@JsonIgnore
+	private Shipping_Type shipping_type;
+	
+	@ManyToOne
+	@JoinColumn(name = "shipper_id")
+	@EqualsAndHashCode.Exclude
+	@ToString.Exclude
+	@JsonIgnore
+	private Shipper shipper;
+
+	 
 	
 }

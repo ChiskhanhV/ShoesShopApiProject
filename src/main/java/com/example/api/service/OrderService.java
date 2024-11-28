@@ -34,4 +34,6 @@ public interface OrderService {
 	List<Order> getOrderByMonthAndYear(int month, int year);
 	
 	List<Object[]> findDailyRevenueByMonth(int month, int year);
+	
+	void assignShipper (String shipperId, List<Integer> orderIds) throws Exception;
 }
