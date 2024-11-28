@@ -71,7 +71,7 @@ public class PromotionController {
 	}
 
 	@PostMapping(path = "/add")
-	public ResponseEntity<Promotion> newPromotion(@RequestParam String name, @RequestParam String description,
+	public ResponseEntity<?> newPromotion(@RequestParam String name, @RequestParam String description,
 			@RequestParam String start, @RequestParam String end, @RequestParam Integer discount,
 			@RequestParam Integer status, @RequestParam String productIds) throws Exception {
 
@@ -89,6 +89,10 @@ public class PromotionController {
 		} catch (ParseException e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
+		// Kiểm tra ngày hết hạn phải sau ngày bắt đầu
+	    if (!endDate.after(startDate)) {
+	        return new ResponseEntity<>("End date must be after the start date.", HttpStatus.BAD_REQUEST);
+	    }
 		newPromotion.setStartDate(startDate);
 		newPromotion.setEndDate(endDate);
 		newPromotion.setDiscount(discount);

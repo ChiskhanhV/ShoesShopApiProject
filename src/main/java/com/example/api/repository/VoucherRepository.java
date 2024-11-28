@@ -16,7 +16,7 @@ public interface VoucherRepository extends JpaRepository<Voucher, Integer> {
 	
 	List<Voucher> findAll();
 	
-	void deleteById(int id);
+	void deleteById(Integer id);
 	
 	Voucher findById (int id);
 }

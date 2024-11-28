@@ -11,7 +11,7 @@ import java.util.List;
 public class Voucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
 
     @Column(name = "code", nullable = false, columnDefinition = "nvarchar(255)")
     private String code;

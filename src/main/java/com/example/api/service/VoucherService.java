@@ -10,7 +10,7 @@ import com.example.api.model.VoucherDto;
 public interface VoucherService {
 	Voucher saveVoucher(Voucher Voucher);
 
-	Voucher getVoucherById(int id);
+	Voucher getVoucherById(Integer id);
 	
 	List<Voucher> getAllVoucher();
 	

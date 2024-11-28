@@ -28,9 +28,9 @@ import lombok.ToString;
 @NoArgsConstructor
 @Table(name = "`order`")
 public class Order {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	@Id()
+//	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Integer id;
 	
 	@Column(name = "total")
 	private int total;
@@ -76,7 +76,7 @@ public class Order {
 	private User user;
 	
 	@ManyToOne
-	@JoinColumn(name = "voucher_id")
+	@JoinColumn(name = "voucher_id", nullable = true)
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@JsonIgnore
@@ -90,7 +90,7 @@ public class Order {
 	private Shipping_Type shipping_type;
 	
 	@ManyToOne
-	@JoinColumn(name = "shipper_id")
+	@JoinColumn(name = "shipper_id", nullable = true)
 	@EqualsAndHashCode.Exclude
 	@ToString.Exclude
 	@JsonIgnore

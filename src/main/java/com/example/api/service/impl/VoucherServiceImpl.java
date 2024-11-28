@@ -23,9 +23,9 @@ public class VoucherServiceImpl implements VoucherService{
 	}
 
 	@Override
-	public Voucher getVoucherById(int id) {
+	public Voucher getVoucherById(Integer id) {
 		// TODO Auto-generated method stub
-		return voucherRepository.findById(id);
+		return voucherRepository.findById(id).orElse(null);
 	}
 
 	@Override
