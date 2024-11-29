@@ -63,6 +63,8 @@ public interface OrderRepository extends JpaRepository<Order, Integer> {
 	// Tìm các đơn hàng theo danh sách ID
 	@Query("SELECT o FROM Order o WHERE o.id IN :ids")
 	List<Order> findAllById(@Param("ids") List<Integer> ids);
-
+	
+	@Query("SELECT o FROM Order o WHERE CAST(o.id AS string) LIKE %:id%")
+	Page<Order> findByIdContaining(@Param("id") String id, Pageable pageable);
 
 }

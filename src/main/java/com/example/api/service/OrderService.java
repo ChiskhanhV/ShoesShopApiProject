@@ -1,5 +1,6 @@
 package com.example.api.service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -36,4 +37,7 @@ public interface OrderService {
 	List<Object[]> findDailyRevenueByMonth(int month, int year);
 	
 	void assignShipper (String shipperId, List<Integer> orderIds) throws Exception;
+	
+	public Page<Order> searchOrderById(String id, Pageable pageable);
+
 }

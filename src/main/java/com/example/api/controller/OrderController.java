@@ -9,6 +9,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -215,5 +217,15 @@ public class OrderController {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
 	    }
 	}
+	
+	@GetMapping(path = "/search/orders")
+	public ResponseEntity<?> searchOrders(@RequestParam String id, 
+	                                      @RequestParam int page, 
+	                                      @RequestParam int size) {
+	    Pageable pageable = PageRequest.of(page, size);
+	    Page<Order> orders = orderService.searchOrderById(id, pageable);
+	    return new ResponseEntity<>(orders, HttpStatus.OK);
+	}
+
 
 }

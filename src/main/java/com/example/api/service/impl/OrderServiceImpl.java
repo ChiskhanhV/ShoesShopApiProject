@@ -127,5 +127,13 @@ public class OrderServiceImpl implements OrderService{
 	    orderRepository.saveAll(orders);
 	}
 
+	@Override
+	public Page<Order> searchOrderById(String id, Pageable pageable) {
+		// TODO Auto-generated method stub
+		return orderRepository.findByIdContaining(id, pageable);
+	}
+
+	
+
 	
 }
