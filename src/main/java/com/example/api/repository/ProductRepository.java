@@ -33,4 +33,14 @@ public interface ProductRepository extends JpaRepository<Product, Integer>, JpaS
 	
 	@Query(value = "select * from product p where p.id in (select i.product_id from promotion pro inner join promotion_item i on pro.id = i.promotion_id and i.promotion_id = ?1);", nativeQuery = true)
 	List<Product> findProductByPromotionID(int id);
+	
+	@Query(value = "SELECT p.* FROM product p " +
+            "INNER JOIN promotion_item i ON p.id = i.product_id " +
+            "INNER JOIN promotion pro ON pro.id = i.promotion_id " +
+            "WHERE p.id = :productId " +
+            "AND pro.is_active = 1 " +
+            "AND CURRENT_DATE BETWEEN pro.start_date AND pro.end_date", 
+    nativeQuery = true)
+	Product findProductInPromotion(@Param("productId") int productId);
+
 }

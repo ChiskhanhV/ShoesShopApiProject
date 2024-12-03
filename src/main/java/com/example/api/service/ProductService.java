@@ -32,4 +32,6 @@ public interface ProductService {
 	List<Product> getProductNotInPromotion();
 	
 	List<Product> getProductByPromotionID(int id);
+	
+	int calculateDiscountedPrice(int productId);
 }

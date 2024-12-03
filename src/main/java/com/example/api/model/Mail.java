@@ -18,7 +18,7 @@ public class Mail
     private String mailBcc;
     private String mailSubject;
     private String mailContent;
-    private String contentType = "text/plain";
+    private String contentType = "text/html";
     private List <Object> attachments;
     
     public Date getMailSendDate() {

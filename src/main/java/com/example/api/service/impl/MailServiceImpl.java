@@ -27,7 +27,9 @@ public class MailServiceImpl implements MailService{
 			mimeMessageHelper.setSubject(mail.getMailSubject());
 			mimeMessageHelper.setFrom(new InternetAddress(mail.getMailFrom()));
 			mimeMessageHelper.setTo(mail.getMailTo());
-			mimeMessageHelper.setText(mail.getMailContent());
+			// Xử lý kiểu nội dung (plain text hoặc HTML)
+            boolean isHtml = "text/html".equalsIgnoreCase(mail.getContentType());
+            mimeMessageHelper.setText(mail.getMailContent(), isHtml);
 			javaMailSender.send(mimeMessageHelper.getMimeMessage());
 		}
 		catch (MessagingException e) {

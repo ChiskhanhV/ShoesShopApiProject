@@ -1,5 +1,6 @@
 package com.example.api.service.impl;
 
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.example.api.entity.Product;
+import com.example.api.entity.Promotion;
+import com.example.api.entity.Promotion_Item;
 import com.example.api.repository.ProductRepository;
 import com.example.api.service.ProductService;
 import com.example.api.specification.ProductSpecification;
@@ -103,4 +106,41 @@ public class ProductServiceImpl implements ProductService {
 		return productRepository.findProductByPromotionID(id);
 	}
 
+	@Override
+	public int calculateDiscountedPrice(int productId) {
+	    // Tìm sản phẩm từ repository
+	    Product product = productRepository.findById(productId);
+	    if (product == null) {
+	        // Log lỗi nếu sản phẩm không tồn tại
+	        System.out.println("Sản phẩm với ID: " + productId + " không tồn tại.");
+	        return 0;
+	    }
+
+	    // Lấy ngày hiện tại
+	    Date currentDate = new Date();
+
+	    // Duyệt qua danh sách PromotionItem của sản phẩm
+	    for (Promotion_Item promotionItem : product.getPromotion_Item()) {
+	        Promotion promotion = promotionItem.getPromotion();
+
+	        // Kiểm tra nếu Promotion không null và đang hoạt động
+	        if (promotion != null
+	                && promotion.getIs_Active() == 1
+	                && promotion.getStartDate().compareTo(currentDate) <= 0
+	                && promotion.getEndDate().compareTo(currentDate) >= 0) {
+
+	            // Tính toán giá sau khuyến mãi
+	            double discountPercentage = promotion.getDiscount();
+	            if (discountPercentage < 0 || discountPercentage > 100) {
+	                System.out.println("Khuyến mãi không hợp lệ: " + discountPercentage + "%");
+	                continue;
+	            }
+	            int discountedPrice = (int) Math.round(product.getPrice() * (1 - discountPercentage / 100.0));
+	            return discountedPrice;
+	        }
+	    }
+
+	    // Không có khuyến mãi nào đang hoạt động, trả về giá gốc
+	    return (int) Math.round(product.getPrice());
+	}
 }
