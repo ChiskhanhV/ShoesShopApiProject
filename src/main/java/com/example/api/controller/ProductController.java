@@ -163,13 +163,15 @@ public class ProductController {
 
 	@GetMapping(path = "/filter")
 	public Page<Product> filterProducts(@RequestParam(value = "categoryName", required = false) String categoryName,
+			@RequestParam(value = "brandName", required = false) String brandName,
+			@RequestParam(value = "shoesSize", required = false) Integer shoesSize,
 			@RequestParam(value = "minPrice", required = false) Integer minPrice,
 			@RequestParam(value = "maxPrice", required = false) Integer maxPrice,
 			@RequestParam(value = "sortOrder", required = false) String sortOrder,
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "size", defaultValue = "12") int size) {
 
-		return productService.filterProducts(categoryName, minPrice, maxPrice, sortOrder, page, size);
+		return productService.filterProducts(categoryName, brandName, shoesSize, minPrice, maxPrice, sortOrder, page, size);
 	}
 
 	@GetMapping("/notinpromotion")

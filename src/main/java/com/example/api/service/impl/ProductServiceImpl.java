@@ -76,13 +76,21 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
-	public Page<Product> filterProducts(String categoryName, Integer minPrice, Integer maxPrice, String sortOrder,
-			int page, int pageSize) {
+	public Page<Product> filterProducts(String categoryName, String brandName, Integer size, Integer minPrice, Integer maxPrice, String sortOrder, int page,
+			int pageSize) {
 		Pageable pageable = PageRequest.of(page, pageSize);
 		Specification<Product> spec = Specification.where(null);
 
 		if (categoryName != null && !categoryName.isEmpty()) {
 			spec = spec.and(ProductSpecification.hasCategory(categoryName));
+		}
+		
+		if (brandName != null && !brandName.isEmpty()) {
+			spec = spec.and(ProductSpecification.hasBrand(brandName));
+		}
+		System.out.println("SIZE GIAY DEFAULT: " +size);
+		if(size != null) {
+			spec = spec.and(ProductSpecification.hasSize(size));
 		}
 
 		if (minPrice != null && maxPrice != null) {

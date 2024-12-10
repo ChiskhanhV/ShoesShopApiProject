@@ -26,7 +26,7 @@ public interface ProductService {
 
 	Page<Product> findByProduct_NameContaining(String name, Pageable pageable);
 
-	Page<Product> filterProducts(String categoryName, Integer minPrice, Integer maxPrice, String sortOrder, int page,
+	Page<Product> filterProducts(String categoryName, String brandName, Integer size, Integer minPrice, Integer maxPrice, String sortOrder, int page,
 			int pageSize);
 	
 	List<Product> getProductNotInPromotion();
