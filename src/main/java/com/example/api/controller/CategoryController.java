@@ -47,11 +47,12 @@ public class CategoryController {
 		return new ResponseEntity<>(categories, HttpStatus.OK); 
 	}
 
-	@PostMapping(path = "/add", consumes = "multipart/form-data")
+	@PostMapping(path = "/add")
 	public ResponseEntity<Category> newCategory(@RequestParam String categoryName,
-			@RequestParam MultipartFile categoryImage) {
+			@RequestParam Boolean status) {
 		Category newCategory = new Category();
 		newCategory.setCategory_Name(categoryName);
+		newCategory.setStatus(status);
 
 //		if (categoryImage != null) {
 //			String url = cloudinaryService.uploadFile(categoryImage);
@@ -68,10 +69,10 @@ public class CategoryController {
 		}
 	}
 
-	@PutMapping(path = "/edit/{id}", consumes = "multipart/form-data")
+	@PutMapping(path = "/edit/{id}")
 	public ResponseEntity<Category> editCategory(@PathVariable Integer id, 
 			@RequestParam(required = false) String categoryName,
-			@RequestParam(required = false) MultipartFile categoryImage) {
+			@RequestParam(required = false) Boolean status) {
 
 		Category editCategory = categoryService.getCategoryById(id);
 		if (editCategory != null) {
@@ -82,6 +83,7 @@ public class CategoryController {
 			if (categoryName != null) {
 				editCategory.setCategory_Name(categoryName);
 			}
+			editCategory.setStatus(status);
 			editCategory = categoryService.saveCategory(editCategory);
 			System.out.println("Edit category success.");
 			return new ResponseEntity<Category>(editCategory, HttpStatus.OK);

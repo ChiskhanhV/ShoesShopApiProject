@@ -24,8 +24,6 @@ import lombok.ToString;
 @Data // lombok giúp generate các hàm constructor, get, set v.v.
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(exclude = "parentCategory")
-@ToString(exclude = "parentCategory")
 @Table(name = "category")
 public class Category {
 	@Id
@@ -44,11 +42,4 @@ public class Category {
 	@OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
 	private List<Product> product;
 	
-	@ManyToOne
-    @JoinColumn(name = "parent_id", referencedColumnName = "id")
-	@JsonIgnore
-    private Category parentCategory;
-
-    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL)
-    private List<Category> subCategories;
 }

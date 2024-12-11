@@ -12,6 +12,11 @@ import com.example.api.entity.Order;
 
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 	List<Order> findAllByUser_id(String user_id);
+	
+	List<Order> findAllByShipperId(String shipperId);
+	
+	List<Order> findAllByShipperIdAndStatus(String shipperId, String status);
+
 
 	Order findById(int id);
 

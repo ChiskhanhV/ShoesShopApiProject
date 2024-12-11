@@ -133,6 +133,18 @@ public class OrderServiceImpl implements OrderService{
 		return orderRepository.findByIdContaining(id, pageable);
 	}
 
+	@Override
+	public List<Order> getAllOrderByShipper_Id(String id) {
+		// TODO Auto-generated method stub
+		return orderRepository.findAllByShipperId(id);
+	}
+
+	@Override
+	public List<Order> filterByStatusOfShipper(String shipperId, String status) {
+		// TODO Auto-generated method stub
+		return orderRepository.findAllByShipperIdAndStatus(shipperId, status);
+	}
+
 	
 
 	

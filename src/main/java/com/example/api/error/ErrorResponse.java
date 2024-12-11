@@ -8,6 +8,10 @@ public class ErrorResponse {
         this.errorCode = errorCode;
         this.errorMessage = errorMessage;
     }
+    
+    public ErrorResponse(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 
     public int getErrorCode() {
         return errorCode;

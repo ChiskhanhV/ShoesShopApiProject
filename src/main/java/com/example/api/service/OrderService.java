@@ -13,6 +13,8 @@ public interface OrderService {
 	Order saveOrder(Order order);
 
 	List<Order> getAllOrderByUser_Id(String id);
+	
+	List<Order> getAllOrderByShipper_Id(String id);
 
 	Order findById(int id);
 
@@ -39,5 +41,7 @@ public interface OrderService {
 	void assignShipper (String shipperId, List<Integer> orderIds) throws Exception;
 	
 	public Page<Order> searchOrderById(String id, Pageable pageable);
+	
+	List<Order> filterByStatusOfShipper(String shipperId, String status);
 
 }

@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.api.entity.Product;
 import com.example.api.entity.Promotion;
 import com.example.api.entity.Promotion_Item;
+import com.example.api.error.ErrorCode;
+import com.example.api.error.ErrorResponse;
 import com.example.api.model.PromotionDto;
 import com.example.api.service.ProductService;
 import com.example.api.service.PromotionService;
@@ -91,7 +93,7 @@ public class PromotionController {
 		}
 		// Kiểm tra ngày hết hạn phải sau ngày bắt đầu
 	    if (!endDate.after(startDate)) {
-	        return new ResponseEntity<>("End date must be after the start date.", HttpStatus.BAD_REQUEST);
+	        return new ResponseEntity<>(new ErrorResponse(ErrorCode.EndDateBeforeStartDateException.getMessage()), HttpStatus.BAD_REQUEST);
 	    }
 		newPromotion.setStartDate(startDate);
 		newPromotion.setEndDate(endDate);
@@ -137,7 +139,7 @@ public class PromotionController {
 			}
 			// Kiểm tra ngày hết hạn phải sau ngày bắt đầu
 		    if (!endDate.after(startDate)) {
-		        return new ResponseEntity<>("End date must be after the start date.", HttpStatus.BAD_REQUEST);
+		        return new ResponseEntity<>(new ErrorResponse(ErrorCode.EndDateBeforeStartDateException.getMessage()), HttpStatus.BAD_REQUEST);
 		    }
 			newPromotion.setStartDate(startDate);
 			newPromotion.setEndDate(endDate);

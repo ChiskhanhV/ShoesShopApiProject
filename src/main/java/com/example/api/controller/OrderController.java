@@ -101,11 +101,90 @@ public class OrderController {
 		return new ResponseEntity<>(listOrderDto, HttpStatus.OK);
 	}
 
+//	@PostMapping(path = "/placeorder")
+//	public ResponseEntity<Order> placeOrder(@RequestParam String user_id, @RequestParam String fullname,
+//			@RequestParam String phoneNumber, @RequestParam String address, @RequestParam String paymentMethod,
+//			@RequestParam int total, @RequestParam(required = false) Integer voucherId, @RequestParam int shipping_type_id, @RequestParam(required = false) String shipper_id,
+//			@RequestParam Boolean is_pay) throws Exception {
+//		int randomPart = ThreadLocalRandom.current().nextInt(1, 1000); // Tạo số ngẫu nhiên từ 1 đến 999
+//		int orderId = (int) ((System.currentTimeMillis() + randomPart) % Integer.MAX_VALUE);
+//
+//		List<Cart> listCart = cartService.GetAllCartByUser_id(user_id);
+//		Order newOrder = new Order();
+//		User user = userService.findByIdAndRole(user_id, "user");
+//		long millis = System.currentTimeMillis();
+//		Date booking_date = new java.sql.Date(millis);
+//
+//		Voucher voucher = voucherId != null ? voucherService.getVoucherById(voucherId) : null;
+//	    Shipper shipper = shipper_id != null ? shipperService.getShipperByID(shipper_id) : null;
+//		Shipping_Type shipping_type = shipping_typeService.getShipping_TypeById(shipping_type_id);
+//		
+//		if (shipping_type == null) {
+//	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Kiểu vận chuyển không hợp lệ
+//	    }
+//
+////	    // Tính tổng tiền đơn hàng
+//	    int voucherDiscount = voucher != null ? voucher.getDiscount() : 0;
+//	    int shippingFee = shipping_type.getShipCost();
+////	    int finalTotal = total + shippingFee - voucherDiscount;
+//	    
+//		newOrder.setId(orderId);
+//		newOrder.setUser(user);
+//		newOrder.setFullname(fullname);
+//		newOrder.setBooking_Date(booking_date);
+//		newOrder.setCountry("Việt Nam");
+//		newOrder.setEmail(user.getEmail());
+//		newOrder.setPayment_Method(paymentMethod);
+//		newOrder.setAddress(address);
+//		newOrder.setNote(null);
+//		newOrder.setPhone(phoneNumber);
+//		newOrder.setStatus("Pending");
+//		newOrder.setTotal(total);
+//		newOrder.setVoucher(voucher);
+//		newOrder.setShipper(shipper);
+//		newOrder.setShipping_type(shipping_type);
+//		newOrder.setIsPay(is_pay);
+//
+//		newOrder = orderService.saveOrder(newOrder);
+//
+//		for (Cart y : listCart) {
+//			for (Product_Size ps : y.getProduct().getProductSize()) {
+//				if (y.getSize() == ps.getSize()) {
+//					ps.setQuantity(ps.getQuantity() - y.getCount());
+//				}
+//			}
+//			y.getProduct().setSold(y.getProduct().getSold() + y.getCount());
+//			productService.saveProduct(y.getProduct());
+//			Order_Item newOrder_Item = new Order_Item();
+//			newOrder_Item.setCount(y.getCount());
+//			newOrder_Item.setSize(y.getSize());
+//			newOrder_Item.setOrder(newOrder);
+//			newOrder_Item.setProduct(y.getProduct());
+//			newOrder_Item = order_ItemService.saveOrder_Item(newOrder_Item);
+//			cartService.deleteById(y.getId());
+//		}
+//		// Tạo email HTML
+//        String emailContent = generateOrderEmailContent(newOrder, shippingFee, voucherDiscount, total);
+//	    // Gửi email
+//        Mail mail = new Mail();
+//        mail.setMailFrom("nguyentienngoc02@gmail.com");
+//        mail.setMailTo(newOrder.getEmail());
+//        mail.setMailSubject("Thông tin đơn hàng #" + newOrder.getId());
+//        mail.setMailContent(emailContent);
+//        mail.setContentType("text/html");
+//
+//        mailService.sendEmail(mail);
+//		newOrder = orderService.findById(newOrder.getId());
+//		return new ResponseEntity<>(newOrder, HttpStatus.OK);
+//	}
+	
 	@PostMapping(path = "/placeorder")
 	public ResponseEntity<Order> placeOrder(@RequestParam String user_id, @RequestParam String fullname,
 			@RequestParam String phoneNumber, @RequestParam String address, @RequestParam String paymentMethod,
-			@RequestParam int total, @RequestParam(required = false) Integer voucherId, @RequestParam int shipping_type_id, @RequestParam(required = false) String shipper_id,
-			@RequestParam Boolean is_pay) throws Exception {
+			@RequestParam int total, @RequestParam(required = false) String voucherId,
+			@RequestParam int shipping_type_id, @RequestParam Boolean is_pay) throws Exception {
+//		UUID uuid = UUID.randomUUID();
+//        int orderId = Math.abs(uuid.hashCode());
 		int randomPart = ThreadLocalRandom.current().nextInt(1, 1000); // Tạo số ngẫu nhiên từ 1 đến 999
 		int orderId = (int) ((System.currentTimeMillis() + randomPart) % Integer.MAX_VALUE);
 
@@ -115,19 +194,25 @@ public class OrderController {
 		long millis = System.currentTimeMillis();
 		Date booking_date = new java.sql.Date(millis);
 
-		Voucher voucher = voucherId != null ? voucherService.getVoucherById(voucherId) : null;
-	    Shipper shipper = shipper_id != null ? shipperService.getShipperByID(shipper_id) : null;
-		Shipping_Type shipping_type = shipping_typeService.getShipping_TypeById(shipping_type_id);
+//		Voucher voucher = voucherService.getVoucherById(voucherId);
+//		Shipper shipper = shipperService.getShipperByID(shipper_id);
 		
-		if (shipping_type == null) {
-	        return new ResponseEntity<>(HttpStatus.BAD_REQUEST); // Kiểu vận chuyển không hợp lệ
-	    }
-
-//	    // Tính tổng tiền đơn hàng
-	    int voucherDiscount = voucher != null ? voucher.getDiscount() : 0;
-	    int shippingFee = shipping_type.getShipCost();
-	    int finalTotal = total + shippingFee - voucherDiscount;
+		Voucher voucher = null;
+		if (voucherId != null && !voucherId.equals("null")) {
+		    try {
+		        voucher = voucherService.getVoucherById(Integer.parseInt(voucherId));
+		        voucher.setNumberUsed(voucher.getNumberUsed() + 1);
+		    } catch (NumberFormatException e) {
+		        // Xử lý trường hợp không thể chuyển đổi voucherId thành Integer
+		        System.out.println("Voucher ID không hợp lệ: " + voucherId);
+		    }
+		}
+		
+		int voucherDiscount = voucher != null ? voucher.getDiscount() : 0;
 	    
+		//Shipper shipper = shipper_id != null ? shipperService.getShipperByID(shipper_id) : null;
+		Shipping_Type shipping_type = shipping_typeService.getShipping_TypeById(shipping_type_id);
+		int shippingFee = shipping_type.getShipCost();
 		newOrder.setId(orderId);
 		newOrder.setUser(user);
 		newOrder.setFullname(fullname);
@@ -141,7 +226,7 @@ public class OrderController {
 		newOrder.setStatus("Pending");
 		newOrder.setTotal(total);
 		newOrder.setVoucher(voucher);
-		newOrder.setShipper(shipper);
+		//newOrder.setShipper(shipper);
 		newOrder.setShipping_type(shipping_type);
 		newOrder.setIsPay(is_pay);
 
@@ -163,21 +248,20 @@ public class OrderController {
 			newOrder_Item = order_ItemService.saveOrder_Item(newOrder_Item);
 			cartService.deleteById(y.getId());
 		}
-		// Tạo email HTML
-        String emailContent = generateOrderEmailContent(newOrder, shippingFee, voucherDiscount, finalTotal);
-	    // Gửi email
-        Mail mail = new Mail();
-        mail.setMailFrom("nguyentienngoc02@gmail.com");
-        mail.setMailTo(newOrder.getEmail());
-        mail.setMailSubject("Thông tin đơn hàng #" + newOrder.getId());
-        mail.setMailContent(emailContent);
-        mail.setContentType("text/html");
-
-        mailService.sendEmail(mail);
 		newOrder = orderService.findById(newOrder.getId());
+//		 Tạo email HTML
+      String emailContent = generateOrderEmailContent(newOrder, shippingFee, voucherDiscount, total);
+	    // Gửi email
+      Mail mail = new Mail();
+      mail.setMailFrom("nguyentienngoc02@gmail.com");
+      mail.setMailTo(newOrder.getEmail());
+      mail.setMailSubject("Thông tin đơn hàng #" + newOrder.getId());
+      mail.setMailContent(emailContent);
+      mail.setContentType("text/html");
+
+      mailService.sendEmail(mail);
 		return new ResponseEntity<>(newOrder, HttpStatus.OK);
 	}
-	
 	private String generateOrderEmailContent(Order order, int shippingFee, int voucherDiscount, int finalTotal) {
         StringBuilder orderItemsHtml = new StringBuilder();
         int orderTotal = 0;
@@ -276,7 +360,19 @@ public class OrderController {
 		}
 		return new ResponseEntity<>(listOrderDto, HttpStatus.OK);
 	}
-
+	
+	@GetMapping(path = "/orderofshipper")
+	public ResponseEntity<List<OrderDto>> getAllOrderByShipper_Id(String shipper_id) {
+		System.out.println(shipper_id);
+		List<Order> listOrder = orderService.getAllOrderByShipper_Id(shipper_id);
+		List<OrderDto> listOrderDto = new ArrayList<>();
+		for (Order o : listOrder) {
+			OrderDto orderDto = modelMapper.map(o, OrderDto.class);
+			System.out.println(orderDto.getId());
+			listOrderDto.add(orderDto);
+		}
+		return new ResponseEntity<>(listOrderDto, HttpStatus.OK);
+	}
 //	@GetMapping(path = "/orderbystatus")
 //	public ResponseEntity<List<OrderDto>> getOrderByStatus(String status) {
 //		List<Order> listOrderByStatus = orderService.filterByStatus(status);
@@ -325,7 +421,6 @@ public class OrderController {
 	        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
 	    }
 	}
-	
 	@GetMapping(path = "/search/orders")
 	public ResponseEntity<?> searchOrders(@RequestParam String id, 
 	                                      @RequestParam int page, 
@@ -335,5 +430,39 @@ public class OrderController {
 	    return new ResponseEntity<>(orders, HttpStatus.OK);
 	}
 
+	@GetMapping(path = "/orderStatus")
+	public ResponseEntity<List<OrderDto>> getAllOrderByStatus(String status){
+		List<Order> listOrderByStatus = orderService.filterByStatus(status);
+		List<OrderDto> listOrderDto = new ArrayList<>();
+		for(Order o: listOrderByStatus) {
+			OrderDto orderDto = modelMapper.map(o, OrderDto.class);
+			listOrderDto.add(orderDto);
+		}
+		return new ResponseEntity<>(listOrderDto, HttpStatus.OK);
+	}
+	
+	@GetMapping(path = "/orderStatusOfShipper")
+	public ResponseEntity<List<OrderDto>> getAllOrderByStatusOfShipper(String shipperId, String status){
+		List<Order> listOrderByStatusOfShipper = orderService.filterByStatusOfShipper(shipperId,status);
+		List<OrderDto> listOrderDto = new ArrayList<>();
+		for(Order o: listOrderByStatusOfShipper) {
+			OrderDto orderDto = modelMapper.map(o, OrderDto.class);
+			listOrderDto.add(orderDto);
+		}
+		return new ResponseEntity<>(listOrderDto, HttpStatus.OK);
+	}
+	
+	@PatchMapping(path = "/getmoney/{orderId}")
+	public ResponseEntity<OrderDto> getMoney(@PathVariable("orderId") int orderId, Boolean is_pay) {
+		Order orderToUpdate = orderService.findById(orderId);
+		if (orderToUpdate == null) {
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+		}
 
+		orderToUpdate.setIsPay(is_pay);
+		Order updatedOrder = orderService.saveOrder(orderToUpdate);
+		OrderDto updatedOrderDto = modelMapper.map(updatedOrder, OrderDto.class);
+
+		return new ResponseEntity<>(updatedOrderDto, HttpStatus.OK);
+	}
 }

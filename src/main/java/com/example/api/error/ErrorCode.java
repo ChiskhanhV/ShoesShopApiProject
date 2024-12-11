@@ -38,7 +38,9 @@ public enum ErrorCode {
     CATEGORY_NOT_FOUND(6001, "Category not found"),
     DUPLICATE_CATEGORY(6002, "Category already exists"),
     INVALID_CATEGORY_DATA(6003, "Invalid category data provided"),
-    CATEGORY_CREATION_FAILED(6004, "Failed to create category");
+    CATEGORY_CREATION_FAILED(6004, "Failed to create category"),
+    
+    EndDateBeforeStartDateException(7001, "End date must be after the start date");
 
     private final int code;
     private final String message;

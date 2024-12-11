@@ -58,15 +58,15 @@ public class RatingController {
 		}
 	}
 	
-	@GetMapping("/product/{productId}")
-    public ResponseEntity<List<Rating>> getRatingsByProductId(@PathVariable int productId) {
-        List<Rating> listRatings = RatingService.getRatingByProductId(productId);
-        if (listRatings != null) {
-			return new ResponseEntity<>(listRatings, HttpStatus.OK);
-		} else {
-			return new ResponseEntity<>(listRatings, HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-    }
+//	@GetMapping("/product/{productId}")
+//    public ResponseEntity<List<Rating>> getRatingsByProductId(@PathVariable int productId) {
+//        List<Rating> listRatings = RatingService.getRatingByProductId(productId);
+//        if (listRatings != null) {
+//			return new ResponseEntity<>(listRatings, HttpStatus.OK);
+//		} else {
+//			return new ResponseEntity<>(listRatings, HttpStatus.INTERNAL_SERVER_ERROR);
+//		}
+//    }
 	
 	@GetMapping("/pagination/{page}/{pageSize}")
 	public ResponseEntity<Page<Rating>> findProductsWithPagination(@PathVariable int page,@PathVariable int pageSize){
@@ -77,7 +77,7 @@ public class RatingController {
 	@PostMapping(path = "/add", consumes = "multipart/form-data")
 	public ResponseEntity<Rating> newRating(@RequestParam String user_id, @RequestParam int product_id, @RequestParam int ratingValue,
 			@RequestParam String review,
-			@RequestParam(required = false) List<MultipartFile> RatingImage) {
+			@RequestParam(required = false) MultipartFile RatingImage) {
 		Rating newRating = new Rating();
 		User user = userService.findByIdAndRole(user_id, "user");
 		Product product = productService.getProductById(product_id);
@@ -85,13 +85,9 @@ public class RatingController {
 		newRating.setUser(user);
 		newRating.setRatingValue(ratingValue);
 
-		if (RatingImage != null && !RatingImage.isEmpty()) {
-		    StringBuilder urls = new StringBuilder();
-		    for (MultipartFile image : RatingImage) {
-		        String url = cloudinaryService.uploadFile(image);
-		        urls.append(url).append(","); // Lưu nhiều URL, ngăn cách bằng dấu phẩy
-		    }
-		    newRating.setImg(urls.toString());
+		if (RatingImage != null) {
+			String url = cloudinaryService.uploadFile(RatingImage);
+			newRating.setImg(url);
 		} else {
 		    return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
@@ -168,15 +164,16 @@ public class RatingController {
         }
     }
 	
-	@GetMapping(path = "/ratingofproduct")
-	public ResponseEntity<List<RatingDto>> RatingOfUser(int product_id) {
-		List<Rating> listRating = RatingService.getRatingByProductId(product_id);
-		List<RatingDto> lisRatingDto = new ArrayList<>();
-		for (Rating y : listRating) {
-			RatingDto RatingDto = modelMapper.map(y, RatingDto.class);
-			System.out.println(RatingDto);
-			lisRatingDto.add(RatingDto);
+	@GetMapping("/product/{productId}")
+	public ResponseEntity<List<RatingDto>> getRatingsByProductId(@PathVariable int productId) {
+		List<Rating> listRatings = RatingService.getRatingByProductId(productId);
+
+		List<RatingDto> listRatingDto = new ArrayList<>();
+		for (Rating o : listRatings) {
+			RatingDto dto = modelMapper.map(o, RatingDto.class);
+			listRatingDto.add(dto);
 		}
-		return new ResponseEntity<>(lisRatingDto, HttpStatus.OK);
+		return new ResponseEntity<>(listRatingDto, HttpStatus.OK);
 	}
+
 }

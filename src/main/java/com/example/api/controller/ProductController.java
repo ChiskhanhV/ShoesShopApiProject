@@ -23,6 +23,7 @@ import com.example.api.entity.Product;
 import com.example.api.entity.Product_Image;
 import com.example.api.entity.Product_Size;
 import com.example.api.service.CategoryService;
+import com.example.api.service.BrandService;
 import com.example.api.service.CloudinaryService;
 import com.example.api.service.ProductService;
 import com.example.api.service.Product_ImageService;
@@ -39,6 +40,9 @@ public class ProductController {
 
 	@Autowired
 	CategoryService categoryService;
+	
+	@Autowired
+	BrandService brandService;
 
 	@Autowired
 	Product_ImageService product_ImageService;
@@ -79,7 +83,8 @@ public class ProductController {
 	@PostMapping(path = "/add", consumes = "multipart/form-data")
 	public ResponseEntity<Product> newProduct(@RequestParam String product_name,
 			@RequestParam String product_decription, @RequestParam String product_price,
-			@RequestParam String product_category, @RequestParam String product_is_active,
+			@RequestParam String product_category, @RequestParam String product_brand,
+			@RequestParam String product_is_active,
 			@RequestParam("product_images") List<MultipartFile> product_images,
 			@RequestParam("product_sizes") String product_sizes) {
 
@@ -105,6 +110,7 @@ public class ProductController {
 			newProduct.setSold(0);
 			newProduct.setCreated_At(createdAt);
 			newProduct.setCategory(categoryService.getCategoryById(Integer.parseInt(product_category)));
+			newProduct.setBrand(brandService.getBrandById(Integer.parseInt(product_brand)));
 			System.out.println(newProduct);
 			Product savedProduct = productService.saveProduct(newProduct);
 
@@ -209,7 +215,7 @@ public class ProductController {
 	@PostMapping(path = "/update", consumes = "multipart/form-data")
 	public ResponseEntity<Product> editProduct(@RequestParam int id, @RequestParam String product_name,
 			@RequestParam String product_decription, @RequestParam(defaultValue = "0") String product_price,
-			@RequestParam int product_category, @RequestParam(defaultValue = "0") int product_is_active,
+			@RequestParam int product_category, @RequestParam int product_brand, @RequestParam(defaultValue = "0") int product_is_active,
 			@RequestParam("product_images") List<MultipartFile> product_images,
 			@RequestParam("product_sizes") String product_sizes) {
 
@@ -235,6 +241,7 @@ public class ProductController {
 				newProduct.setDescription(product_decription);
 				newProduct.setIs_Active(product_is_active);
 				newProduct.setCategory(categoryService.getCategoryById(product_category));
+				newProduct.setBrand(brandService.getBrandById(product_brand));
 				System.out.println(newProduct);
 				Product savedProduct = productService.saveProduct(newProduct);
 

@@ -11,5 +11,5 @@ public class ShipperDto {
 	private String password;
 	private String avatar;
 	private String address;
-	private List<ShippingDto> shipping;
+	private List<OrderDto> order;
 }

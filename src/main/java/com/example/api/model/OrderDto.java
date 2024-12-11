@@ -10,6 +10,7 @@ public class OrderDto {
 	private int total;
 	private Date booking_Date;
 	private String payment_Method;
+	private Boolean isPay;
 	private String status;
 	private String fullname;
 	private String country;
@@ -19,4 +20,5 @@ public class OrderDto {
 	private String note;
 	private List<Order_ItemDto> order_Item;
 	private UserDto user;
+	private Shipping_TypeDto shipping_type;
 }

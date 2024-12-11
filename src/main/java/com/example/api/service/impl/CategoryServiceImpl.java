@@ -34,28 +34,7 @@ public class CategoryServiceImpl implements CategoryService{
 	@Override
 	public List<Category> getAllCategory() {
 		// TODO Auto-generated method stub
-//		return categoryRepository.findAll();
-		List<Category> allCategories = categoryRepository.findAll();
-	    Map<Integer, Category> categoryMap = new HashMap<>();
-	    List<Category> rootCategories = new ArrayList<>();
-
-	    // Đưa tất cả danh mục vào map
-	    for (Category category : allCategories) {
-	        categoryMap.put(category.getId(), category);
-	    }
-
-	    // Tạo cấu trúc cây
-	    for (Category category : allCategories) {
-	        if (category.getParentCategory() == null) {
-	            rootCategories.add(category);
-	        } else {
-	            Category parent = categoryMap.get(category.getParentCategory().getId());
-	            if (parent != null) {
-	                parent.getSubCategories().add(category);
-	            }
-	        }
-	    }
-	    return rootCategories;
+		return categoryRepository.findAll();
 	}
 
 	@Override
